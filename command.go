@@ -125,6 +125,7 @@ func (c *Commands) Observe(ctx *BotContext, event *slack.RTMEvent) error {
 		log.Debug("cmd not found")
 		return nil
 	}
+	log.Debug("running command")
 
 	cleanText := e.Text[bounds[1]:]
 	replyText, err := cmd.RunCommand(ctx.Ctx, cleanText, e)

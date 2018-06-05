@@ -1,13 +1,13 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	"os"
 	"time"
 
 	"github.com/blinsay/lasagnad"
+	"github.com/blinsay/lasagnad/commands"
 	"github.com/nlopes/slack"
 	"github.com/sirupsen/logrus"
 )
@@ -38,9 +38,8 @@ func main() {
 	}
 
 	cmd := lasagnad.NewCommands('!', b.Name, slackApi)
-	cmd.CmdFunc("echo", "echo your message back. how fun!", func(ctx context.Context, text string, event *slack.MessageEvent) (string, error) {
-		return text, nil
-	})
+	cmd.CmdFunc("echo", "echo it back", commands.Echo)
+	cmd.CmdFunc("frog", "CLICK ON FROG FOR TIP", commands.FrogTip)
 
 	b.Observers = []lasagnad.Observer{
 		cmd,
