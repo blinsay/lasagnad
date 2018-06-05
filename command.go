@@ -101,6 +101,8 @@ func (c *Commands) CmdFunc(name string, help string, f func(context.Context, str
 	})
 }
 
+// Observe muxes over all registered Command implementations for every
+// MessageEvent. Discards all other message types.
 func (c *Commands) Observe(ctx *BotContext, event *slack.RTMEvent) error {
 	e, isEvent := event.Data.(*slack.MessageEvent)
 	if !isEvent {

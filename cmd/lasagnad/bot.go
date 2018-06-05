@@ -88,7 +88,9 @@ func (b *bot) Run() error {
 // observer block another is a choice we're gonna stick to for now. if an
 // Observer knows it's slow, it can fire off its own goroutines.
 func (b *bot) observe(event *slack.RTMEvent) {
-	timeout, _ := context.WithTimeout(context.Background(), b.MessageTimeout)
+	timeout, cancel := context.WithTimeout(context.Background(), b.MessageTimeout)
+	defer cancel()
+
 	ctx := lasagnad.BotContext{
 		Ctx: timeout,
 		Log: b.Logger,

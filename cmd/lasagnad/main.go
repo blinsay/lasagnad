@@ -28,16 +28,16 @@ func init() {
 }
 
 func main() {
-	slackApi := slackClient(botAuth, slackDebug)
+	slackAPI := slackClient(botAuth, slackDebug)
 
 	b := &bot{
 		Name:           "lasagnad",
 		MessageTimeout: 2 * time.Second,
 		Logger:         logger(debug),
-		Slack:          slackApi,
+		Slack:          slackAPI,
 	}
 
-	cmd := lasagnad.NewCommands('!', b.Name, slackApi)
+	cmd := lasagnad.NewCommands('!', b.Name, slackAPI)
 	cmd.CmdFunc("echo", "echo it back", commands.Echo)
 	cmd.CmdFunc("frog", "CLICK ON FROG FOR TIP", commands.FrogTip)
 

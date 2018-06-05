@@ -16,12 +16,12 @@ func Echo(ctx context.Context, text string, m *slack.MessageEvent) (string, erro
 }
 
 const (
-	frogUrl string = "https://frog.tips/api/1/tips/"
+	frogURL string = "https://frog.tips/api/1/tips/"
 )
 
 // FrogTip does a frogtips.
 func FrogTip(ctx context.Context, text string, m *slack.MessageEvent) (string, error) {
-	request, err := http.NewRequest(http.MethodGet, frogUrl, nil)
+	request, err := http.NewRequest(http.MethodGet, frogURL, nil)
 	if err != nil {
 		return "", errors.Wrap(err, "frogtips: http.NewRequest")
 	}
