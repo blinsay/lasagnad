@@ -18,16 +18,19 @@ import (
 // Flags are organized into FlagSets so that anyone who wants to use a config
 // file for some (or all) of the options listed here has some structure to
 // help them organize.
+//
+// NOTE: only global Flag opts are parseable from the CLI
 
+// global opts
 var (
-	authOpts  = flagset("auth", flag.ExitOnError)
-	authToken = authOpts.String("token", "", "the auth token to use to connect to Slack")
-)
-
-var (
-	debugOpts             = flagset("debug", flag.ExitOnError)
 	debug                 = flag.Bool("debug", false, "debug mode")
 	dumpWebsocketMessages = flag.Bool("dump-websocket-messages", false, "print all received websocket messages to stderr")
+)
+
+// auth opts
+var (
+	authOpts  = flagset("auth")
+	authToken = authOpts.String("token", "", "the auth token to use to connect to Slack")
 )
 
 func main() {
@@ -93,8 +96,8 @@ func logger(debug bool) *logrus.Logger {
 	return logger
 }
 
-func flagset(name string, errorHandling flag.ErrorHandling) *flag.FlagSet {
-	set := flag.NewFlagSet(name, errorHandling)
+func flagset(name string) *flag.FlagSet {
+	set := flag.NewFlagSet(name, flag.ContinueOnError)
 	globalconf.Register(set.Name(), set)
 	return set
 }
