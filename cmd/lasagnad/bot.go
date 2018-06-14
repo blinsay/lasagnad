@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// TODO(benl): handle Observer panics
 // TODO(benl): track latency
 // TODO(benl): track uptime
 // TODO(benl): track messages currently in flight

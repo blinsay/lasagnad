@@ -10,6 +10,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// TODO(benl): handle panics
+// TODO(benl): subcommands (like `!img pin garf` and `!img show garf` or `!db version` and `!db update`)
+
 // A Command is a high-level interface to the slack API.
 //
 // Commands are run in response to matching a command string and respond to the
