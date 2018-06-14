@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/glacjay/goini"
+  packages = ["."]
+  revision = "fd3024d87ee21a36d3ccc4367f509fec89cd90ee"
+
+[[projects]]
   name = "github.com/gorilla/websocket"
   packages = ["."]
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
@@ -18,6 +24,12 @@
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/rakyll/globalconf"
+  packages = ["."]
+  revision = "f3ec558991f8d5e7b1efcc291fa36edef6c47123"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -43,6 +55,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "324af9da95474d99e6568677b2ac202f4720bbe2f9c7f55babd73311bc8db5fa"
+  inputs-digest = "df163384d37e29cb15314d252ae458f7daef0d2cff6e390475a995ebea484fb4"
   solver-name = "gps-cdcl"
   solver-version = 1
