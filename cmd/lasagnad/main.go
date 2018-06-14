@@ -9,31 +9,41 @@ import (
 	"github.com/blinsay/lasagnad"
 	"github.com/blinsay/lasagnad/commands"
 	"github.com/nlopes/slack"
+	"github.com/rakyll/globalconf"
 	"github.com/sirupsen/logrus"
 )
 
-// TODO(???): start using a config file for secrets
-// TODO(???): add more commands and plugins and stuff
+// Flags are parsed using globalconfig
+//
+// Flags are organized into FlagSets so that anyone who wants to use a config
+// file for some (or all) of the options listed here has some structure to
+// help them organize.
 
 var (
-	debug      = false
-	slackDebug = false
-	botAuth    = os.Getenv("GARF_BOT_AUTH")
+	authOpts  = flagset("auth", flag.ExitOnError)
+	authToken = authOpts.String("token", "", "the auth token to use to connect to Slack")
 )
 
-func init() {
-	flag.BoolVar(&debug, "debug", false, "turn on debug mode")
-	flag.BoolVar(&slackDebug, "slack-debug", false, "turn on slack-api debug mode")
-	flag.Parse()
-}
+var (
+	debugOpts             = flagset("debug", flag.ExitOnError)
+	debug                 = flag.Bool("debug", false, "debug mode")
+	dumpWebsocketMessages = flag.Bool("dump-websocket-messages", false, "print all received websocket messages to stderr")
+)
 
 func main() {
-	slackAPI := slackClient(botAuth, slackDebug)
+	conf, err := globalconf.New("lasagnad")
+	if err != nil {
+		log.Fatalf("uh oh, couldn't read config: %s", err)
+	}
+	conf.EnvPrefix = "GARF_"
+	conf.ParseAll()
+
+	slackAPI := slackClient(*authToken, *dumpWebsocketMessages)
 
 	b := &bot{
 		Name:           "lasagnad",
 		MessageTimeout: 2 * time.Second,
-		Logger:         logger(debug),
+		Logger:         logger(*debug),
 		Slack:          slackAPI,
 	}
 
@@ -81,4 +91,10 @@ func logger(debug bool) *logrus.Logger {
 	}
 
 	return logger
+}
+
+func flagset(name string, errorHandling flag.ErrorHandling) *flag.FlagSet {
+	set := flag.NewFlagSet(name, errorHandling)
+	globalconf.Register(set.Name(), set)
+	return set
 }
