@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// TODO(benl): allow commands to stream responses somehow
 // TODO(benl): handle panics
 // TODO(benl): subcommands (like `!img pin garf` and `!img show garf` or `!db version` and `!db update`)
 
