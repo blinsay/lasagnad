@@ -57,6 +57,16 @@
   version = "v1.37.0"
 
 [[projects]]
+  name = "github.com/google/gops"
+  packages = [
+    "agent",
+    "internal",
+    "signal"
+  ]
+  revision = "0e2aa5d22efec1603f7ded7097c500e9a36a13b3"
+  version = "v0.3.3"
+
+[[projects]]
   name = "github.com/google/uuid"
   packages = ["."]
   revision = "064e2069ce9c359c118179501254f67d7d37ba24"
@@ -72,6 +82,12 @@
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
   revision = "0b12d6b5"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/kardianos/osext"
+  packages = ["."]
+  revision = "ae77be60afb1dcacde03767a8c37337fad28ac14"
 
 [[projects]]
   name = "github.com/nlopes/slack"
@@ -130,6 +146,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d8f2968de999330d58cceab6a101e5e062341334540deeb92d971808989bc99d"
+  inputs-digest = "8cc2ef8c745075e3f02491d7db75887b48603c3f021d7cb7d11bd8804030a862"
   solver-name = "gps-cdcl"
   solver-version = 1

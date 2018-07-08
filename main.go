@@ -16,6 +16,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/google/gops/agent"
 	"github.com/google/uuid"
 	"github.com/nlopes/slack"
 	"github.com/rakyll/globalconf"
@@ -74,11 +75,18 @@ func main() {
 		},
 	}
 
+	// try authing to slack before anything else happens. fail fast, baby!
 	if err := b.TestAuth(); err != nil {
 		b.Logger.Fatal("can't start! failed an auth test: ", err)
 		return
 	}
 
+	// gops. keep ShutdownCleanup on because this seems a little easier
+	if err := agent.Listen(agent.Options{ShutdownCleanup: true}); err != nil {
+		b.Logger.Error("exiting with a fatal error: ", err)
+	}
+
+	// the bot
 	if err := b.Run(); err != nil {
 		b.Logger.Error("exiting with a fatal error: ", err)
 	}
