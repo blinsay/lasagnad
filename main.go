@@ -248,7 +248,7 @@ func (b *bot) handle(log logrus.FieldLogger, rtmEvent *slack.RTMEvent) {
 	startedAt := time.Now()
 	defer func() {
 		elapsed := time.Since(startedAt)
-		log.WithField("elapsed_ms", elapsed/time.Millisecond).Debug("complete")
+		log.WithField("elapsed_ms", elapsed/time.Millisecond).Info("done")
 	}()
 
 	// TODO(benl): catch panics here?
@@ -260,7 +260,7 @@ func (b *bot) handle(log logrus.FieldLogger, rtmEvent *slack.RTMEvent) {
 	case `show`:
 		b.handleShow(ctx, log, message, args)
 	default:
-		log.WithField("cmd", cmd).Error("opps. unimplemented command")
+		log.WithField("cmd", cmd).Debug("unknown command")
 		b.reply(ctx, log, message, "opps i don't know that song")
 	}
 }
@@ -331,7 +331,7 @@ func (b *bot) handlePin(ctx context.Context, log logrus.FieldLogger, message *sl
 	log.WithFields(logrus.Fields{
 		"name": img.Name,
 		"img":  hex.EncodeToString(img.ID[:]),
-	}).Info("uploaded")
+	}).Debug("uploaded")
 
 	b.reply(ctx, log, message, "k")
 }
