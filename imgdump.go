@@ -9,11 +9,11 @@ import (
 	"image"
 	"io"
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"net/url"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -226,7 +226,15 @@ func (dump *imgdump) list(ctx context.Context, name string) ([]img, error) {
 
 // make an s3 key. should only be called from imgdump
 func s3key(prefix, name, filetype string, id imgid) string {
-	filename := fmt.Sprintf("%x.%s", id, filetype)
+	extensions, err := mime.ExtensionsByType("image/" + filetype)
+	if err != nil {
+		panic(fmt.Sprintf("illegal image mime type %q! error=%q", filetype, err))
+	}
+	if len(extensions) == 0 {
+		panic(fmt.Sprintf("unknown image mime type %q!", filetype))
+	}
+	ext := extensions[0]
+	filename := fmt.Sprintf("%x%s", id, ext)
 
 	return filepath.Join(prefix, name, filename)
 }
@@ -238,7 +246,16 @@ func s3prefix(prefix, name string) string {
 
 // make an s3 url. should only be called from imgdump
 func s3url(bucket, prefix, name, filetype string, id imgid) *url.URL {
-	filename := fmt.Sprintf("%x.%s", id, filetype)
+	extensions, err := mime.ExtensionsByType("image/" + filetype)
+	if err != nil {
+		panic(fmt.Sprintf("illegal image mime type %q! error=%q", filetype, err))
+	}
+	if len(extensions) == 0 {
+		panic(fmt.Sprintf("unknown image mime type %q!", filetype))
+	}
+	ext := extensions[0]
+
+	filename := fmt.Sprintf("%x%s", id, ext)
 
 	u := &url.URL{}
 	u.Scheme = "https"
@@ -250,20 +267,29 @@ func s3url(bucket, prefix, name, filetype string, id imgid) *url.URL {
 // parse an imgid and filetype from an s3key. assumes the key was constructed
 // by the s3key func
 func idAndFiletype(s3key string) (imgid, string, error) {
-	var id [16]byte
-
 	filename := filepath.Base(s3key)
-	// ext contains the . in .jpg but filetype should not because we have to
-	// count the .  when trimming the filename down to an ID.
 	ext := filepath.Ext(filename)
-	filetype := strings.TrimLeft(ext, ".")
-	idString := filename[:len(filename)-len(ext)]
 
-	bs, err := hex.DecodeString(idString)
-	if err != nil || len(bs) != 16 {
-		return id, "", errors.Wrap(err, "invalid img filename")
+	mimeType := mime.TypeByExtension(ext)
+	if mimeType == "" {
+		return imgid{}, "", fmt.Errorf("unknown mime type")
 	}
-	copy(id[:], bs)
+	filetype := mimeType[len("image/"):]
+
+	id, err := imgidFromString(filename[:len(filename)-len(ext)])
+	if err != nil {
+		return imgid{}, "", nil
+	}
 
 	return id, filetype, nil
+}
+
+func imgidFromString(str string) (imgid, error) {
+	var id imgid
+	bs, err := hex.DecodeString(str)
+	if err != nil || len(bs) != 16 {
+		return id, err
+	}
+	copy(id[:], bs)
+	return id, nil
 }
