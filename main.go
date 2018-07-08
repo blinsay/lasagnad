@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"log"
@@ -297,6 +298,16 @@ func (b *bot) handlePin(ctx context.Context, log logrus.FieldLogger, message *sl
 
 	// TODO(benl): give fetch its own timeout, shorter than the total response one. child contexts!
 	imageBytes, filetype, err := fetchImageBytes(ctx, &b.HTTP, url, *imgMaxSizeBytes)
+	if err == ErrBadResponseCode {
+		log.WithError(err).Debug("bad response")
+		b.reply(ctx, log, message, "i did not get a 200, my dude")
+		return
+	}
+	if err == ErrBadImage {
+		log.WithError(err).Debug("bad image")
+		b.reply(ctx, log, message, "i'm too dumb to parse that content, my dude")
+		return
+	}
 	if err != nil {
 		log.WithError(err).Error("fetch failed")
 		b.reply(ctx, log, message, genericErrorResponse)
@@ -319,7 +330,7 @@ func (b *bot) handlePin(ctx context.Context, log logrus.FieldLogger, message *sl
 
 	log.WithFields(logrus.Fields{
 		"name": img.Name,
-		"img":  img.ID,
+		"img":  hex.EncodeToString(img.ID[:]),
 	}).Info("uploaded")
 
 	b.reply(ctx, log, message, "k")

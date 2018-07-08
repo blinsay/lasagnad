@@ -287,7 +287,7 @@ func idAndFiletype(s3key string) (imgid, string, error) {
 func imgidFromString(str string) (imgid, error) {
 	var id imgid
 	bs, err := hex.DecodeString(str)
-	if err != nil || len(bs) != 16 {
+	if err != nil || len(bs) != md5.Size {
 		return id, err
 	}
 	copy(id[:], bs)
