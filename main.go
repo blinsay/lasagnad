@@ -63,7 +63,7 @@ func main() {
 
 	b := &bot{
 		Name:           "lasagnad",
-		MessageTimeout: 2 * time.Second,
+		MessageTimeout: 5 * time.Second,
 		Logger:         logger(*debug),
 		Slack:          slackClient(*authToken, *dumpWebsocketMessages),
 		dump: &imgdump{
@@ -178,9 +178,13 @@ func (b *bot) Run() error {
 	for message := range rtm.IncomingEvents {
 		log := b.Logger.WithField("request_id", uuid.New())
 
-		if event, isErr := message.Data.(error); isErr {
-			log.WithField("error", event).Error("unhandled error")
-			return event
+		if rtmErr, isRtmIssue := message.Data.(*slack.UnmarshallingErrorEvent); isRtmIssue {
+			log.WithError(rtmErr).Error("slack RTM type error")
+			continue
+		}
+		if genericErr, isErr := message.Data.(error); isErr {
+			log.WithError(genericErr).Error("unhandled error in the slack library")
+			return genericErr
 		}
 
 		switch event := message.Data.(type) {
