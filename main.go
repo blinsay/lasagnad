@@ -192,7 +192,6 @@ func (b *bot) Run() error {
 			continue
 		}
 		if genericErr, isErr := message.Data.(error); isErr {
-			log.WithError(genericErr).Error("unhandled error in the slack library")
 			return genericErr
 		}
 
