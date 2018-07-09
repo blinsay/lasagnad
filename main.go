@@ -246,6 +246,7 @@ func (b *bot) handle(log logrus.FieldLogger, rtmEvent *slack.RTMEvent) {
 	// of message.Text, the next pair (2, 3) is the range that contains the command,
 	// and the last pair (4, 5) is the range of the rest of the message.
 	cmd, args := message.Text[bounds[2]:bounds[3]], strings.Fields(message.Text[bounds[4]:])
+	log = log.WithField("cmd", cmd)
 
 	// do an early timeout check before trying to do any work
 	if err := ctx.Err(); err != nil {
@@ -253,10 +254,11 @@ func (b *bot) handle(log logrus.FieldLogger, rtmEvent *slack.RTMEvent) {
 		return
 	}
 
+	// setup request logging
 	startedAt := time.Now()
 	defer func() {
 		elapsed := time.Since(startedAt)
-		log.WithField("elapsed_ms", elapsed/time.Millisecond).Info("done")
+		log.WithField("elapsed_ms", int64(elapsed/time.Millisecond)).Info("done")
 	}()
 
 	// TODO(benl): catch panics here?
